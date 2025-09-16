@@ -1,4 +1,4 @@
-package customer.yt00_cap;
+package com.smpl.YT00;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

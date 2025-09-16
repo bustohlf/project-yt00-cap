@@ -1,8 +1,21 @@
 {
-  "cdsc": {
-    "draftMessages": true
+  "build": {
+    "target": "."
   },
   "requires": {
-    "db": "hana"
+    "db": {
+      "kind": "hana"
+    }
+  },
+  "hana": {
+    "deploy-format": "hdbtable"
+  },
+  "odata": {
+    "version": "v4"
+  },
+  "auth": {
+    "passport": {
+      "strategy": "none"
+    }
   }
 }

@@ -4,6 +4,13 @@ version: 1.0.0-SNAPSHOT
 description: "A simple CAP project."
 parameters:
   enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - rm -rf node_modules db/node_modules
+        - npm install --production
+        - npx -p @sap/cds-dk cds build --production
 modules:
   - name: YT00_CAP-srv
     type: java
@@ -12,9 +19,9 @@ modules:
       instances: 1
       buildpack: sap_java_buildpack_jakarta
     properties:
-      SPRING_PROFILES_ACTIVE: cloud,sandbox
-      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
-      JBP_CONFIG_SAP_MACHINE_JRE: '{ version: 21.+ }'
+      SPRING_PROFILES_ACTIVE: cloud
+      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jdk.SAPMachineJDK']"
+      JBP_CONFIG_SAP_MACHINE_JDK: '{ version: 21.+ }'
     build-parameters:
       builder: custom
       commands:
@@ -25,24 +32,17 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      []
-  - name: YT00_CAP-srv
-    type: java
-    path: gen/srv
-    requires:
       - name: YT00_CAP-db
 
   - name: YT00_CAP-db-deployer
     type: hdb
-    path: gen/db
+    path: db
     parameters:
       buildpack: nodejs_buildpack
-    build-parameters:
-      builder: custom
-      commands:
-        - npm run build
     requires:
       - name: YT00_CAP-db
+        properties:
+          TARGET_CONTAINER: ~{hdi-container-name}
 
 resources:
   - name: YT00_CAP-db
@@ -50,3 +50,8 @@ resources:
     parameters:
       service: hana
       service-plan: hdi-shared
+      config:
+        schema: YT00_SCHEMA
+        database_id: 9a77e68c-f22e-4c97-a2f9-b53ff2875acf
+    properties:
+      hdi-container-name: ${service-name}

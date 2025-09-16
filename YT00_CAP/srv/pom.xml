@@ -3,7 +3,7 @@
 
 	<parent>
 		<artifactId>YT00_CAP-parent</artifactId>
-		<groupId>customer</groupId>
+		<groupId>com.sap.cds</groupId>
 		<version>${revision}</version>
 	</parent>
 
