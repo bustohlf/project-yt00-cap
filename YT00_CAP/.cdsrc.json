@@ -5,6 +5,9 @@
   "requires": {
     "db": {
       "kind": "hana"
+    },
+    "uaa": {
+      "kind": "xsuaa"
     }
   },
   "hana": {
@@ -12,10 +15,5 @@
   },
   "odata": {
     "version": "v4"
-  },
-  "auth": {
-    "passport": {
-      "strategy": "none"
-    }
   }
 }

@@ -33,6 +33,7 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: YT00_CAP-db
+      - name: XSUAA_YT00_CAP
 
   - name: YT00_CAP-db-deployer
     type: hdb
@@ -41,8 +42,25 @@ modules:
       buildpack: nodejs_buildpack
     requires:
       - name: YT00_CAP-db
+
+  - name: YT00_CAP-AppRouter
+    type: approuter.nodejs
+    path: approuter
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: XSUAA_YT00_CAP
+      - name: srv-api
+        group: destinations
         properties:
-          TARGET_CONTAINER: ~{hdi-container-name}
+          name: srv-api
+          url: ~{srv-url}
+          forwardAuthToken: true
+    provides:
+      - name: app-api
+        properties:
+          app-uri: ${default-uri}
 
 resources:
   - name: YT00_CAP-db
@@ -55,3 +73,16 @@ resources:
         database_id: 9a77e68c-f22e-4c97-a2f9-b53ff2875acf
     properties:
       hdi-container-name: ${service-name}
+
+  - name: XSUAA_YT00_CAP
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xsuaa/xs-security.json
+      config:
+        oauth2-configuration:
+          redirect-uris:
+            - https://*~{app-api/app-uri}/**
+    requires:
+      - name: app-api
